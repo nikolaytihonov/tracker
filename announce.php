@@ -104,7 +104,7 @@ if (!$ipAddr = inet_pton($ip)) {
 if (isset($_GET["port"])) {
     $port = intval(urldecode($_GET["port"]));
 } else {
-    bad_request("No port");
+	bad_request("No port");
 }
 
 $externalIp = get_external_ip();

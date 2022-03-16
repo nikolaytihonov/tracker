@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 16, 2022 at 01:15 PM
+-- Generation Time: Mar 16, 2022 at 03:35 PM
 -- Server version: 10.7.3-MariaDB
 -- PHP Version: 7.4.28
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `tracker` (
   `info_hash` char(40) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ip` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `port` smallint(5) NOT NULL,
+  `port` smallint(5) UNSIGNED NOT NULL,
   `update_time` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

@@ -35,7 +35,7 @@ function get_external_ip()
     $result = curl_exec($ch);
     curl_close($ch);
 
-    if (result == false) {
+    if ($result == false) {
         throw new Exception("request to ident.me failed");
     } else if (inet_pton($result) == false) {
         throw new Exception("ident.me respond invalid ip");
