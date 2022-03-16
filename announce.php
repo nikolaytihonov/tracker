@@ -127,7 +127,6 @@ $stmt->execute();
 $stmt->bindColumn(1, $peerIp);
 $stmt->bindColumn(2, $peerPort);
 while ($stmt->fetch(PDO::FETCH_BOUND)) {
-    //echo($peerIp . "\t" . $peerPort . "\n");
     $peers .= pack("Nn", inet_pton($peerIp), $peerPort);
 }
 
