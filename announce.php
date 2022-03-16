@@ -1,5 +1,6 @@
 <?php
 require("../php/config.php");
+require("network.php");
 $DB_NAME = "torrent";
 $ANN_MIN_INTERVAL = 15;
 $ANN_INTERVAL = 60;
@@ -106,6 +107,8 @@ if (isset($_GET["port"])) {
     bad_request("No port");
 }
 
+$externalIp = get_external_ip();
+
 $date = new DateTime("now");
 $now = $date->format('Y-m-d H:i:s');
 
@@ -114,7 +117,7 @@ $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $stmt = $conn->prepare("REPLACE INTO `tracker` (info_hash, ip, port, update_time) VALUES (:info_hash, :ip, :port, :update_time)");
 $stmt->bindValue(":info_hash", $hash, PDO::PARAM_STR);
-$stmt->bindValue(":ip", $ip, PDO::PARAM_STR);
+$stmt->bindValue(":ip", is_loopback($ip) ? $externalIp : $ip, PDO::PARAM_STR);
 $stmt->bindValue(":port", $port, PDO::PARAM_INT);
 $stmt->bindValue(":update_time", $now, PDO::PARAM_STR);
 $stmt->execute();
@@ -127,6 +130,11 @@ $stmt->execute();
 $stmt->bindColumn(1, $peerIp);
 $stmt->bindColumn(2, $peerPort);
 while ($stmt->fetch(PDO::FETCH_BOUND)) {
+	if (is_loopback($peerIp) && !is_loopback($ip)) {
+		$peerIp = $externalIp;
+	} else if ($peerIp == $externalIp && is_loopback($ip)) {
+		$peerIp = ip4_loopback();
+	}
     $peers .= pack("Nn", inet_pton($peerIp), $peerPort);
 }
 
