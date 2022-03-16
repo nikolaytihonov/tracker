@@ -26,7 +26,7 @@ function hash_encode($str)
     return hex2bin($str);
 }
 
-function bencode ($var)
+function bencode($var)
 {
 	if (is_string($var)) {
 		return strlen($var) .':'. $var;
