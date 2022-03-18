@@ -68,16 +68,19 @@ $stmt = $conn->prepare("SELECT * FROM `trackers`");
 $stmt->execute();
 $trackers = $stmt->fetchAll(PDO::FETCH_CLASS, Tracker::class);
 foreach($trackers as $tracker) {
-    $remotePeers = $tracker->announce($hash,
-        $clientPeer->getIp(), $clientPeer->getPort(),
-        isset($_GET["peer_id"]) ? $_GET["peer_id"] : null,
-        isset($_GET["uploaded"]) ? $_GET["uploaded"] : 0,
-        isset($_GET["downloaded"]) ? $_GET["downloaded"] : 0,
-        isset($_GET["left"]) ? $_GET["left"] : 0
-    );
+    try {
+            $remotePeers = $tracker->announce($hash,
+            $clientPeer->getIp(), $clientPeer->getPort(),
+            isset($_GET["peer_id"]) ? $_GET["peer_id"] : null,
+            isset($_GET["uploaded"]) ? $_GET["uploaded"] : 0,
+            isset($_GET["downloaded"]) ? $_GET["downloaded"] : 0,
+            isset($_GET["left"]) ? $_GET["left"] : 0
+        );
 
-    if ($remotePeers != false) {
-        $peers = array_merge($peers, $remotePeers);
+        if ($remotePeers != false) {
+            $peers = array_merge($peers, $remotePeers);
+        }
+    } catch (Exception $e) {
     }
 }
 

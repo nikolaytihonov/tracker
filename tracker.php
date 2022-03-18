@@ -26,6 +26,14 @@ class Tracker {
         return $this->proto . "://" . $this->host . $this->path;
     }
 
+    public function getPasskeyName() {
+        if (!is_null($this->passkey)) {
+            return explode(' ', $this->passkey)[0];
+        }
+
+        return false;
+    }
+
     public function doHttpAnnounce($infoHash, $peerIp, $peerPort, $peerId = null, $uploaded = 0, $downloaded = 0, $left = 0) {
         $peers = array();
 
@@ -44,6 +52,7 @@ class Tracker {
         curl_setopt($ch, CURLOPT_URL, $this->getHttpUrl() . "?" . $passkey . $params);
         curl_setopt($ch, CURLOPT_PORT, intval($this->port));
         curl_setopt($ch, CURLOPT_USERAGENT, self::ANN_USERAGENT);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         if (!is_null($this->proxy)) {
             curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
@@ -57,7 +66,7 @@ class Tracker {
         }
 
         $response = bdecode($result);
-        if (array_key_exists($response, "failure reason")) {
+        if (!array_key_exists("peers", $response)) {
             return false;
         }
 
