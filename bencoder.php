@@ -62,6 +62,19 @@ function bdecode($enc, &$off = null)
 		while (substr($enc, $off, 1) != 'e') {
 			array_push($result, bdecode($enc, $off));
 		}
+	} else if ($type == 'd') {
+		$off++;
+		$result = array();
+		while (substr($enc, $off, 1) != 'e') {
+			$key = bdecode($enc, $off);
+			$value = bdecode($enc, $off);
+			$result[$key] = $value;
+		}
+	} else {
+		$sep = strpos($enc, ':', $off);
+		$len = intval(substr($enc, $off, $sep - $off));
+		$result = substr($enc, $sep + 1, $len);
+		$off = $sep + 1 + $len;
 	}
 
 	return $result;
