@@ -57,6 +57,10 @@ class Tracker {
         }
 
         $response = bdecode($result);
+        if (array_key_exists($response, "failure reason")) {
+            return false;
+        }
+
         $peersEnc = $response["peers"];
         for ($i = 0; $i < strlen($peersEnc); $i+=6) {
             $remoteIp = long2ip(unpack("N", $peersEnc, $i)[1]);
