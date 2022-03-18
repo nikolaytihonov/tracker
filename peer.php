@@ -1,5 +1,15 @@
 <?php
 
+function hash_decode($urldata)
+{
+    return bin2hex(rawurldecode($urldata));
+}
+
+function hash_encode($str)
+{
+    return hex2bin($str);
+}
+
 class Peer {
     protected $info_hash;
     protected $ip;
@@ -20,6 +30,14 @@ class Peer {
         $stmt->bindValue(":ip", $this->ip, PDO::PARAM_STR);
         $stmt->bindValue(":port", $this->port, PDO::PARAM_INT);
         $stmt->bindValue(":update_time", $this->update_time, PDO::PARAM_STR);
+    }
+
+    public function getIp() {
+        return $this->ip;
+    }
+
+    public function getPort() {
+        return $this->port;
     }
 }
 

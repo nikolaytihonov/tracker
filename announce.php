@@ -1,8 +1,7 @@
 <?php
 require("../php/config.php");
 require("network.php");
-require("bencoder.php");
-require("peer.php");
+require("tracker.php");
 $DB_NAME = "torrent";
 $ANN_MIN_INTERVAL = 15;
 $ANN_INTERVAL = 60;
@@ -17,16 +16,6 @@ function bad_request($msg)
 function do_error($msg)
 {
     die($msg);
-}
-
-function hash_decode($urldata)
-{
-    return bin2hex(rawurldecode($urldata));
-}
-
-function hash_encode($str)
-{
-    return hex2bin($str);
 }
 
 
@@ -67,14 +56,36 @@ if (isset($_GET["port"])) {
 }
 
 $externalIp = get_external_ip();
+$clientPeer = new Peer($hash, is_loopback($ip) ? $externalIp : $ip, $port);
 
 $conn = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME", $DB_USER, $DB_PASS);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$stmt = $conn->prepare("REPLACE INTO `peers` (info_hash, ip, port, update_time) VALUES (:info_hash, :ip, :port, :update_time)");
-$peer = new Peer($hash, is_loopback($ip) ? $externalIp : $ip, $port);
-$peer->bind($stmt);
+$peers = array();
+array_push($peers, $clientPeer);
+
+$stmt = $conn->prepare("SELECT * FROM `trackers`");
 $stmt->execute();
+$trackers = $stmt->fetchAll(PDO::FETCH_CLASS, Tracker::class);
+foreach($trackers as $tracker) {
+    $remotePeers = $tracker->announce($hash,
+        $clientPeer->getIp(), $clientPeer->getPort(),
+        isset($_GET["peer_id"]) ? $_GET["peer_id"] : null,
+        isset($_GET["uploaded"]) ? $_GET["uploaded"] : 0,
+        isset($_GET["downloaded"]) ? $_GET["downloaded"] : 0,
+        isset($_GET["left"]) ? $_GET["left"] : 0
+    );
+
+    if ($remotePeers != false) {
+        $peers = array_merge($peers, $remotePeers);
+    }
+}
+
+foreach($peers as $peer) {
+    $stmt = $conn->prepare("REPLACE INTO `peers` (info_hash, ip, port, update_time) VALUES (:info_hash, :ip, :port, :update_time)");
+    $peer->bind($stmt);
+    $stmt->execute();
+}
 
 $peers = '';
 
