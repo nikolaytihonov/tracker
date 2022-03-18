@@ -43,21 +43,27 @@ function bencode($var)
 	}
 }
 
-function bdecode($enc)
+function bdecode($enc, &$off = null)
 {
 	$result = null;
-	$encLen = strlen($enc);
-	for ($i = 0; $i < $encLen; $i++)
-	{
-		$type = substr($enc, $i, 1);
-		if ($type == 'i') {
-			$start = ++$i;
-			$end = strpos($enc, 'e', $i);
-			$result = substr($enc, $start, $end - $start);
-			$i = $end;
-			continue;
+	if ($off == null) {
+		$_off = 0;
+		$off = $_off;
+	}
+
+	$type = substr($enc, $off, 1);
+	if ($type == 'i') {
+		$end = strpos($enc, 'e', $off + 1);
+		$result = intval(substr($enc, $off + 1, $end - $off - 1));
+		$off = $end + 1;
+	} else if ($type == 'l') {
+		$off++;
+		$result = array();
+		while (substr($enc, $off, 1) != 'e') {
+			array_push($result, bdecode($enc, $off));
 		}
 	}
+
 	return $result;
 }
 
