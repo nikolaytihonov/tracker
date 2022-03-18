@@ -68,9 +68,6 @@ if (isset($_GET["port"])) {
 
 $externalIp = get_external_ip();
 
-$date = new DateTime("now");
-$now = $date->format('Y-m-d H:i:s');
-
 $conn = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME", $DB_USER, $DB_PASS);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
