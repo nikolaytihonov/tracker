@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 18, 2022 at 01:06 PM
+-- Generation Time: Mar 18, 2022 at 05:06 PM
 -- Server version: 10.7.3-MariaDB
 -- PHP Version: 7.4.28
 
@@ -44,7 +44,7 @@ CREATE TABLE `trackers` (
   `proto` char(5) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'http',
   `host` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `port` smallint(5) UNSIGNED NOT NULL DEFAULT 80,
-  `uri` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `path` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT '/announce',
   `passkey` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `proxy` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
