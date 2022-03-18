@@ -73,7 +73,7 @@ $now = $date->format('Y-m-d H:i:s');
 $conn = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME", $DB_USER, $DB_PASS);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$stmt = $conn->prepare("REPLACE INTO `tracker` (info_hash, ip, port, update_time) VALUES (:info_hash, :ip, :port, :update_time)");
+$stmt = $conn->prepare("REPLACE INTO `peers` (info_hash, ip, port, update_time) VALUES (:info_hash, :ip, :port, :update_time)");
 $stmt->bindValue(":info_hash", $hash, PDO::PARAM_STR);
 $stmt->bindValue(":ip", is_loopback($ip) ? $externalIp : $ip, PDO::PARAM_STR);
 $stmt->bindValue(":port", $port, PDO::PARAM_INT);
@@ -82,7 +82,7 @@ $stmt->execute();
 
 $peers = '';
 
-$stmt = $conn->prepare("SELECT ip, port FROM `tracker` WHERE info_hash = :info_hash");
+$stmt = $conn->prepare("SELECT ip, port FROM `peers` WHERE info_hash = :info_hash");
 $stmt->bindValue(":info_hash", $hash, PDO::PARAM_STR);
 $stmt->execute();
 $stmt->bindColumn(1, $peerIp);
