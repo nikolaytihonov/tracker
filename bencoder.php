@@ -42,23 +42,23 @@ function bencode($var)
 		do_error('bencode wrong data type');
 	}
 }
-/*
+
 function bdecode($enc)
 {
-    if ($endPos = strpos($enc, 'e') == false) {
-        // string
-    }
-    if (!$endPos) {
-        return null;
-    }
-
-    $type = substr($enc, 1, 1);
-    $data = substr($enc, 1, $endPos - 1);
-    switch ($type)
-    {
-        case 'i': return intval($data);
-
-    }
+	$result = null;
+	$encLen = strlen($enc);
+	for ($i = 0; $i < $encLen; $i++)
+	{
+		$type = substr($enc, $i, 1);
+		if ($type == 'i') {
+			$start = ++$i;
+			$end = strpos($enc, 'e', $i);
+			$result = substr($enc, $start, $end - $start);
+			$i = $end;
+			continue;
+		}
+	}
+	return $result;
 }
-*/
+
 ?>
