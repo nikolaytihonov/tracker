@@ -2,6 +2,7 @@
 require("../php/config.php");
 require("network.php");
 require("bencoder.php");
+require("peer.php");
 $DB_NAME = "torrent";
 $ANN_MIN_INTERVAL = 15;
 $ANN_INTERVAL = 60;
@@ -74,10 +75,8 @@ $conn = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME", $DB_USER, $DB_PASS);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $stmt = $conn->prepare("REPLACE INTO `peers` (info_hash, ip, port, update_time) VALUES (:info_hash, :ip, :port, :update_time)");
-$stmt->bindValue(":info_hash", $hash, PDO::PARAM_STR);
-$stmt->bindValue(":ip", is_loopback($ip) ? $externalIp : $ip, PDO::PARAM_STR);
-$stmt->bindValue(":port", $port, PDO::PARAM_INT);
-$stmt->bindValue(":update_time", $now, PDO::PARAM_STR);
+$peer = new Peer($hash, is_loopback($ip) ? $externalIp : $ip, $port);
+$peer->bind($stmt);
 $stmt->execute();
 
 $peers = '';
