@@ -69,12 +69,12 @@ $stmt->execute();
 $trackers = $stmt->fetchAll(PDO::FETCH_CLASS, Tracker::class);
 foreach($trackers as $tracker) {
     try {
-            $remotePeers = $tracker->announce($hash,
+        $remotePeers = $tracker->announce($hash,
             $clientPeer->getIp(), $clientPeer->getPort(),
             isset($_GET["peer_id"]) ? $_GET["peer_id"] : null,
-            isset($_GET["uploaded"]) ? $_GET["uploaded"] : 0,
-            isset($_GET["downloaded"]) ? $_GET["downloaded"] : 0,
-            isset($_GET["left"]) ? $_GET["left"] : 0
+            isset($_GET["uploaded"]) ? intval($_GET["uploaded"]) : 0,
+            isset($_GET["downloaded"]) ? intval($_GET["downloaded"]) : 0,
+            isset($_GET["left"]) ? intval($_GET["left"]) : 0
         );
 
         if ($remotePeers != false) {
