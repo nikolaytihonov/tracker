@@ -7,6 +7,7 @@ $DB_NAME = "torrent";
 class Tracker {
     const ANN_USERAGENT = "Transmission/3.00";
     const ANN_PEER_ID = "01234567890123456789";
+    const ANN_TIMEOUT_MS = 500;
 
     protected $proto;
     protected $host;
@@ -50,7 +51,7 @@ class Tracker {
         curl_setopt($ch, CURLOPT_URL, $this->getHttpUrl() . "?" . $passkey . $params);
         curl_setopt($ch, CURLOPT_PORT, intval($this->port));
         curl_setopt($ch, CURLOPT_USERAGENT, self::ANN_USERAGENT);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, self::ANN_TIMEOUT_MS);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         if (!is_null($this->proxy)) {
             curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
@@ -87,7 +88,7 @@ class Tracker {
 
         $sockfd = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         socket_set_option($sockfd, SOL_SOCKET, SO_RCVTIMEO,
-            array("sec" => 1, "usec" => 0));
+            array("sec" => 0, "usec" => self::ANN_TIMEOUT_MS*1000));
 
         $transaction_id = rand();
         $req = pack("JNN", 4497486125440, 0, $transaction_id);
@@ -112,7 +113,7 @@ class Tracker {
         }
         $res = unpack("Naction/Ntransaction_id/Ninterval/Nleechers/Nseeders", $buf);
         //$count = $res["leechers"] + $res["seeders"];
-        $count = ($res - 20) / 6;
+        $count = ($recv - 20) / 6;
         for ($i = 0; $i < $count; $i++) {
             $peer = unpack("Nip/nport", $buf, 20 + $i*6);
             array_push($peers, new Peer($infoHash,
