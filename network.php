@@ -1,5 +1,17 @@
 <?php
 
+function bad_request($msg)
+{
+    http_response_code(400);
+    echo($msg);
+    exit;
+}
+
+function do_error($msg)
+{
+    die($msg);
+}
+
 function ip4_loopback()
 {
     return inet_pton("127.0.0.1");

@@ -6,19 +6,6 @@ $DB_NAME = "torrent";
 $ANN_MIN_INTERVAL = 15;
 $ANN_INTERVAL = 60;
 
-function bad_request($msg)
-{
-    http_response_code(400);
-    echo($msg);
-    exit;
-}
-
-function do_error($msg)
-{
-    die($msg);
-}
-
-
 if (!isset($_GET["info_hash"])) {
     bad_request("No info_hash");
 }
